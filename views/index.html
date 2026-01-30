@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Store | Одежда</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">OnlineStore</a>
+            <div class="d-flex">
+                <a href="/auth.html" class="btn btn-outline-light me-2">Login</a>
+                <a href="/cart.html" class="btn btn-primary">Cart <span id="cart-count" class="badge bg-danger">0</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="py-5 bg-white border-bottom mb-4">
+        <div class="container">
+            <div class="text-center my-5">
+                <h1 class="fw-bolder">New Collection 2026</h1>
+                <p class="lead mb-0">Trendy clothing with delivery across Kazakhstan</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">Categories</div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0" id="category-list">
+                            <li><a href="#!" class="text-decoration-none">Все товары</a></li>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row" id="product-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p>Loading products...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-5 bg-dark mt-5">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Online Store 2026</p></div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

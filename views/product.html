@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Online Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">OnlineStore</a>
+            <a href="/views/index.html" class="btn btn-outline-light btn-sm">Catalog</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row bg-white p-4 shadow-sm rounded">
+            <div class="col-md-6 text-center">
+                <img id="productImg" src="https://via.placeholder.com/500" class="img-fluid rounded" alt="Product Image">
+            </div>
+
+            <div class="col-md-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumbCategory">Category</li>
+                    </ol>
+                </nav>
+                <h1 id="productName" class="display-5 fw-bold">Loading...</h1>
+                <p id="productBrand" class="text-muted fs-5 mb-3"></p>
+                <h3 id="productPrice" class="text-primary mb-4"></h3>
+                <p id="productDesc" class="lead"></p>
+
+                <hr>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Select Variant (Size/Color)</label>
+                    <select class="form-select" id="variantSelect">
+                        </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Quantity</label>
+                    <input type="number" id="quantityInput" class="form-control w-25" value="1" min="1">
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100" id="addToCartBtn">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/product.js"></script>
+</body>
+</html>
