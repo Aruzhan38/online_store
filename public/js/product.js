@@ -35,30 +35,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function addToCart(productId) {
     const token = localStorage.getItem('token');
-    const sku = document.getElementById('variantSelect').value;
-    const qty = parseInt(document.getElementById('quantityInput').value);
-
-    const priceText = document.getElementById('productPrice').innerText;
-    const priceSnapshot = parseFloat(priceText.replace(/[^0-9.]/g, '')); 
-
-    const res = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ productId, sku, qty, priceSnapshot }) 
-    });
 
     if (!token) {
-        alert('Please login first');
-        window.location.href = '/auth.html';
+        if (confirm('In order to add items to your cart, you need to log in. Proceed to login page?')) {
+            window.location.href = '/auth.html';
+        }
         return;
     }
 
-    if (res.ok) {
-        alert('Product added to cart!');
-    } else {
-        alert('Failed to add to cart');
+    const sku = document.getElementById('variantSelect').value;
+    const qty = parseInt(document.getElementById('quantityInput').value);
+    const priceText = document.getElementById('productPrice').innerText;
+    const priceSnapshot = parseFloat(priceText.replace(/[^0-9.]/g, '')); 
+
+    try {
+        const res = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ productId, sku, qty, priceSnapshot }) 
+        });
+
+        if (res.status === 401) {
+            alert('Your session has expired. Please log in again.');
+            localStorage.removeItem('token');
+            window.location.href = '/auth.html';
+            return;
+        }
+
+        if (res.ok) {
+            alert('Product added to cart successfully!');
+        } else {
+            alert('Failed to add product to cart. Please try again later.');
+        }
+    } catch (err) {
+        console.error('Error adding product to cart:', err);
     }
 }

@@ -10,15 +10,19 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
             body: JSON.stringify({ email, password })
         });
 
-        const data = await res.json();
-
         if (res.ok) {
+            const data = await res.json();
+            
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            
-            alert('Login successful!');
-            window.location.href = '/index.html'; 
+
+            if (data.user.role === 'admin') {
+                window.location.href = '/admin.html';
+            } else {
+                window.location.href = '/index.html';
+            }
         } else {
+            const data = await res.json();
             alert(data.message || 'Login failed');
         }
     } catch (err) {

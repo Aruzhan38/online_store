@@ -19,87 +19,89 @@ async function fetchCart() {
 
 function renderCart(cart) {
     const container = document.getElementById('cartContainer');
-    const checkoutBtn = document.getElementById('checkoutBtn');
     let total = 0;
+    currentCartItems = cart.items;
 
     if (!cart.items || cart.items.length === 0) {
-        container.innerHTML = 'Your cart is empty.';
-        checkoutBtn.disabled = true;
+        container.innerHTML = '<div class="text-center py-5"><h5>Your cart is empty</h5></div>';
         return;
     }
 
- container.innerHTML = cart.items.map(item => {
-    const price = item.priceSnapshot || (item.productId ? item.productId.price : 0);
-    const itemTotal = price * item.qty;
-    total += itemTotal;
-    
-    const imgUrl = (item.productId && item.productId.images && item.productId.images[0]) 
-                   ? item.productId.images[0] 
-                   : 'https://via.placeholder.com/80';
-
-    return `
-        <div class="card mb-3 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <img src="${imgUrl}" alt="product" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
-                    
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="card-title mb-1">${item.productId ? item.productId.name : 'Unknown Product'}</h5>
-                                <p class="text-muted small mb-0">SKU: ${item.sku}</p>
-                            </div>
-                            <button class="btn btn-outline-danger btn-sm border-0" onclick="removeItem('${item._id}')">
-                                <i class="bi bi-trash"></i> Удалить
-                            </button>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <span class="text-muted">Кол-во: <strong>${item.qty}</strong></span>
-                            <span class="fw-bold text-primary">${itemTotal.toLocaleString()} KZT</span>
-                        </div>
-                    </div>
+    container.innerHTML = cart.items.map(item => {
+        const price = item.priceSnapshot || 0;
+        const itemTotal = price * item.qty;
+        total += itemTotal;
+        
+        return `
+        <div class="card mb-3 shadow-sm border-0 p-3">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <img src="${item.productId.images?.[0]}" class="img-fluid rounded">
+                </div>
+                <div class="col-7">
+                    <h6 class="fw-bold mb-1">${item.productId.name}</h6>
+                    <div class="text-muted small"> Size / Color: ${item.sku}</div>
+                    <div class="mt-1">Qty: ${item.qty} x <strong>${item.priceSnapshot} KZT</strong></div>
+                </div>
+                <div class="col-3 text-end">
+                    <div class="fw-bold mb-3">${(item.priceSnapshot * item.qty).toLocaleString()} KZT</div>
+                    <button class="btn btn-sm btn-outline-danger border-0" onclick="removeItem('${item._id}')">
+                        <i class="bi bi-trash"></i> Remove
+                    </button>
                 </div>
             </div>
         </div>`;
-}).join('');
+    }).join('');
+
+    document.getElementById('subtotal').innerText = `${total} KZT`;
 
     currentTotal = total;
     document.getElementById('total').innerText = `${total} KZT`;
-    checkoutBtn.disabled = false;
-    checkoutBtn.onclick = placeOrder;
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if(checkoutBtn) {
+        checkoutBtn.onclick = placeOrder;
+    }
 }
 
 async function placeOrder() {
+    console.log("Кнопка нажата!");
+
     const token = localStorage.getItem('token');
     const address = document.getElementById('addressInput').value;
 
-    if (!address) return alert('Please enter address');
+    if (!address) return alert('Please enter a shipping address.');
+    if (!token) return alert('You must be logged in to place an order.');
 
-    const cleanItems = currentCartItems.map(item => ({
-        productId: item.productId._id || item.productId,
-        sku: item.sku,
-        qty: item.qty
-    }));
+    const orderData = {
+        items: currentCartItems.map(item => ({
+            productId: item.productId._id || item.productId,
+            sku: item.sku,
+            qty: item.qty,
+            lineTotal: (item.priceSnapshot || 0) * item.qty
+        })),
+        totalAmount: currentTotal,
+        shippingAddress: { city: "Astana", street: address, zip: "010000" }
+    };
 
-    const res = await fetch('/api/orders/orders', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({ 
-            items: cleanItems, 
-            totalAmount: currentTotal,
-            shippingAddress: { city: "Default", street: address, zip: "000000" }
-        })
-    });
+    try {
+        const res = await fetch('/api/orders/orders', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify(orderData)
+        });
 
-    if (res.ok) {
-        alert('Success!');
-        window.location.href = '/profile.html';
-    } else {
-        alert('Failed to place order');
+        if (res.ok) {
+            alert('Order placed successfully!');
+            window.location.href = '/profile.html';
+        } else {
+            const error = await res.json();
+            alert(`Failed to place order: ${error.message}`);
+        }
+    } catch (err) {
+        console.error('Error placing order:', err);
     }
 }
 

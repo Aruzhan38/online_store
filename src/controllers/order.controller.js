@@ -27,7 +27,7 @@ exports.createOrder = async (req, res) => {
         });
 
         await newOrder.save();
-        await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
+        await Cart.findOneAndUpdate({ userId: req.user.id }, { $set: { items: [] } });
 
         res.status(201).json(newOrder);
     } catch (error) {
